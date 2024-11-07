@@ -5,12 +5,10 @@ from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import Tool
-from langchain.agents import (
-    create_react_agent,
-    AgentExecutor
-)
+from langchain.agents import create_react_agent, AgentExecutor
 from langchain import hub
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from tools.tools import get_profile_url_tavily
 
 load_dotenv()
@@ -34,21 +32,22 @@ def lookup(name: str) -> str:
         Tool(
             name="Crawl Google 4 linkedin profile page",
             func=get_profile_url_tavily,
-            description="useful for when you need get the LinkedIn Page URL"
+            description="useful for when you need get the LinkedIn Page URL",
         )
     ]
 
     react_prompt = hub.pull("hwchase17/react")
     agent = create_react_agent(llm=llm, tools=tools_for_agent, prompt=react_prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools_for_agent, verbose=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools_for_agent, verbose=True, handle_parsing_errors=True)
 
     result = agent_executor.invoke(
         input={"input": prompt_template.format_prompt(name_of_person=name)}
     )
 
-    linkedin_profile_url = result("output")
+    linkedin_profile_url = result["output"]
 
     return linkedin_profile_url
+
 
 if __name__ == "__main__":
     linkedin_url = lookup("Lucas de Ávila Moreira Linkedin profile")

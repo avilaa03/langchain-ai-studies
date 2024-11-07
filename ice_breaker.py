@@ -4,6 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from dotenv import load_dotenv
 from third_parties.linkedin import scrape_linkedin_profile
+from agents.linkedin_lookup_agent import lookup as linkedin_lookup_agent
 import os
 
 information = """
@@ -16,9 +17,9 @@ Senna was recognised for his qualifying speed over one lap and the ability to pu
 During the 1994 San Marino Grand Prix, Senna died as a result of an accident whilst leading the race, driving for Williams. His state funeral was attended by an estimated three million people. Following subsequent safety reforms, he was the last fatality in the Formula One World Championship until Jules Bianchi in 2015. Senna was inducted into the International Motorsports Hall of Fame in 2000.
 """
 
-if __name__ == "__main__":
-    load_dotenv()
-    print("Hello LangChain!")
+def ice_break_with(name: str) -> str:
+    linkedin_username = linkedin_lookup_agent(name=name)
+    linkedin_data = scrape_linkedin_profile(linkedin_profile_url=linkedin_username, mock=True)
 
     summary_template = """
         given the information {information} about a person from I want you to create:
@@ -35,9 +36,14 @@ if __name__ == "__main__":
 
     chain = summary_prompt_template | llm | StrOutputParser()
     linkedin_data = scrape_linkedin_profile(
-        linkedin_profile_url="https://www.linkedin.com/in/lucasdeavila",
-        mock=True
+        linkedin_profile_url="https://www.linkedin.com/in/lucasdeavila", mock=True
     )
     res = chain.invoke(input={"information": linkedin_data})
 
     print(res)
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    print("Ice Breaker Enter!")
+    ice_break_with(name="Lucas de Ávila Moreira Linkedin Profile")
