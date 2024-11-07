@@ -15,11 +15,11 @@ load_dotenv()
 
 
 def lookup(name: str) -> str:
-    # llm = ChatOpenAI(
-    #     temperature=0,
-    #     model_name="gpt-4o-mini"
-    # )
-    llm = ChatOllama(model="llama3")
+    llm = ChatOpenAI(
+        temperature=0,
+        model_name="gpt-4o-mini"
+    )
+    # llm = ChatOllama(model="llama3")
 
     template = """given the full name {name_of_person} I want you to get it me a link of their LinkedIn profile page.
     Your answer should contain only a URL"""
@@ -38,7 +38,9 @@ def lookup(name: str) -> str:
 
     react_prompt = hub.pull("hwchase17/react")
     agent = create_react_agent(llm=llm, tools=tools_for_agent, prompt=react_prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools_for_agent, verbose=True, handle_parsing_errors=True)
+    agent_executor = AgentExecutor(
+        agent=agent, tools=tools_for_agent, verbose=True, handle_parsing_errors=True
+    )
 
     result = agent_executor.invoke(
         input={"input": prompt_template.format_prompt(name_of_person=name)}
