@@ -14,7 +14,7 @@ def process():
     name = request.form["name"]
     summary_and_facts, profile_pic_url = ice_break_with(name=name)
     return jsonify({
-        "summary-and-facts": summary_and_facts.to_dict(),
+        "summary": summary_and_facts.to_dict(),
         "picture_url": profile_pic_url,
     })
 
